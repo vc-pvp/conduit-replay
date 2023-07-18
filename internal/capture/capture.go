@@ -5,9 +5,6 @@ import (
 	"errors"
 	"expvar"
 	"fmt"
-	"github.com/buger/goreplay/internal/size"
-	"github.com/buger/goreplay/internal/tcp"
-	"github.com/buger/goreplay/proto"
 	"io"
 	"log"
 	"net"
@@ -17,6 +14,10 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/buger/goreplay/internal/size"
+	"github.com/buger/goreplay/internal/tcp"
+	"github.com/buger/goreplay/proto"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -766,7 +767,7 @@ func (l *Listener) setInterfaces() (err error) {
 		}
 
 		if strings.HasPrefix(l.host, "k8s://") {
-			if !strings.HasPrefix(pi.Name, "veth") {
+			if !strings.HasPrefix(pi.Name, "ens") {
 				continue
 			}
 		}

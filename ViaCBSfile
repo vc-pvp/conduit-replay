@@ -1,0 +1,9 @@
+cgePipeline("docker-buildx") {
+  role 'vc-pvp'
+
+  preventDoubleVerify true
+  dockerComposeEnabled false
+  dockerBakeFile 'deploy/docker-bake.hcl'
+
+  push 'conduit-replay'
+}
