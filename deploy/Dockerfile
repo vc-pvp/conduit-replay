@@ -9,6 +9,7 @@ RUN update-ca-certificates
 COPY go.mod go.sum ./
 COPY *.go ./
 COPY cmd ./cmd
+COPY proto ./proto
 COPY internal ./internal
 COPY middleware ./middleware
 
