@@ -23,5 +23,5 @@ RUN GOOS=linux GOARCH=arm64 go build -mod=vendor -o conduit-replay -tags netgo -
 FROM scratch
 WORKDIR /app/replay/bin
 COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /app/replay/src/conduit-replay .
+COPY --from=builder /app/build/conduit-replay .
 ENTRYPOINT ["./conduit-replay"]
