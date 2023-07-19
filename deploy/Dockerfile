@@ -1,5 +1,5 @@
 # Base
-FROM --platform=linux/arm64 golang:1.20.4-alpine as base
+FROM golang:1.20.4-alpine as base
 
 WORKDIR /app/conduit-replay
 RUN apk add build-base make gcc g++ linux-headers git libpcap libpcap-dev
@@ -14,8 +14,8 @@ FROM base as builder
 
 WORKDIR /app/replay
 COPY --from=base /app/conduit-replay/conduit-replay-2.0.0-rc1 /app/replay
-RUN GOOS=linux GOARCH=arm64 go mod vendor
-RUN GOOS=linux GOARCH=arm64 go build -mod=vendor -o conduit-replay -tags netgo -ldflags "-extldflags \"-static\""
+RUN go mod vendor
+RUN go build -mod=vendor -o conduit-replay -tags netgo -ldflags "-extldflags \"-static\""
 
 # Output
 FROM scratch
