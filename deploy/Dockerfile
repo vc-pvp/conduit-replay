@@ -1,16 +1,16 @@
 # Base
 FROM docker-hub.repo.viacom.com/golang:1.20.4-alpine as base
 
-WORKDIR /app/replay
+WORKDIR /app/replay/src
 RUN apk add build-base make gcc g++ linux-headers git libpcap libpcap-dev
 RUN apk update && apk upgrade && apk add --no-cache ca-certificates
 RUN update-ca-certificates
 
-COPY go.mod ./src
-COPY *.go ./src
-COPY cmd ./src/cmd/
-COPY internal ./src/internal/
-COPY middleware ./src/middleware/
+COPY go.mod .
+COPY *.go .
+COPY cmd ./cmd
+COPY internal ./internal
+COPY middleware ./middleware
 
 FROM base as builder
 
