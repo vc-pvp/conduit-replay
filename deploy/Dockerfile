@@ -8,9 +8,9 @@ RUN update-ca-certificates
 
 COPY go.mod ./src
 COPY *.go ./src
-COPY cmd ./src/cmd
-COPY internal ./src/internal
-COPY middleware ./src/middleware
+COPY cmd ./src/cmd/
+COPY internal ./src/internal/
+COPY middleware ./src/middleware/
 
 FROM base as builder
 
