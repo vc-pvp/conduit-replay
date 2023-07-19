@@ -1,5 +1,5 @@
 # Base
-FROM golang:1.20.4-alpine as base
+FROM --platform=linux/arm64 golang:1.20.4-alpine
 
 WORKDIR /app/conduit-replay
 RUN apk add build-base make gcc g++ linux-headers git libpcap libpcap-dev
@@ -8,17 +8,12 @@ RUN update-ca-certificates
 
 RUN wget https://github.com/vc-pvp/conduit-replay/archive/refs/tags/v2.0.0-rc1.tar.gz -O replay.tar.gz
 RUN tar xzf replay.tar.gz
+COPY /app/conduit-replay/conduit-replay-2.0.0-rc1 /go/src
 
-# Build stage
-FROM base as builder
-
-WORKDIR /app/replay
-COPY --from=base /app/conduit-replay/conduit-replay-2.0.0-rc1 /app/replay
+WORKDIR /go/src
 RUN go mod vendor
-RUN go build -mod=vendor -o conduit-replay -tags netgo -ldflags "-extldflags \"-static\""
+RUN GOOS=linux GOARCH=arm64 go build -mod=vendor -o conduit-replay -tags netgo -ldflags "-extldflags \"-static\""
+COPY /go/src/conduit-replay /go/bin
 
-# Output
-FROM scratch
-COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /app/replay/conduit-replay .
+WORKDIR /go/bin
 ENTRYPOINT ["./conduit-replay"]
