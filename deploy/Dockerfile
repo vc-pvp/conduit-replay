@@ -1,5 +1,5 @@
 # Base
-FROM --platform=linux/arm64 golang:1.20.4-alpine
+FROM golang:1.20.4-alpine
 
 WORKDIR /app/conduit-replay
 RUN apk add build-base make gcc g++ linux-headers git libpcap libpcap-dev
@@ -12,8 +12,10 @@ COPY /app/conduit-replay/conduit-replay-2.0.0-rc1 /go/src
 
 WORKDIR /go/src
 RUN go mod vendor
-RUN GOOS=linux GOARCH=arm64 go build -mod=vendor -o conduit-replay -tags netgo -ldflags "-extldflags \"-static\""
+RUN go build -mod=vendor -o conduit-replay -tags netgo
+
 COPY /go/src/conduit-replay /go/bin
+RUN chmod +x /go/bin/conduit-replay
 
 WORKDIR /go/bin
 ENTRYPOINT ["./conduit-replay"]
