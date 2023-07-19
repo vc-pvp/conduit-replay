@@ -1,14 +1,14 @@
 # Base
 FROM --platform=linux/arm64 golang:1.20.4-alpine
 
-WORKDIR /app/conduit-replay
+WORKDIR /app/replay
 RUN apk add build-base make gcc g++ linux-headers git libpcap libpcap-dev
 RUN apk update && apk upgrade && apk add --no-cache ca-certificates
 RUN update-ca-certificates
 
 RUN wget https://github.com/vc-pvp/conduit-replay/archive/refs/tags/v2.0.0-rc1.tar.gz -O replay.tar.gz
 RUN tar xzf replay.tar.gz
-COPY /app/conduit-replay/conduit-replay-2.0.0-rc1 /go/src
+COPY /app/replay/conduit-replay-2.0.0-rc1 /go/src
 
 WORKDIR /go/src
 RUN go mod vendor
