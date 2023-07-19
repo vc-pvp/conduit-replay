@@ -1,20 +1,20 @@
 # Base
 FROM docker-hub.repo.viacom.com/golang:1.20.4-alpine as base
 
-WORKDIR /app/replay/src
+WORKDIR /app//src
 RUN apk add build-base make gcc g++ linux-headers git libpcap libpcap-dev
 RUN apk update && apk upgrade && apk add --no-cache ca-certificates
 RUN update-ca-certificates
 
-COPY go.mod .
-COPY *.go .
+COPY go.mod go.sum ./
+COPY *.go ./
 COPY cmd ./cmd
 COPY internal ./internal
 COPY middleware ./middleware
 
 FROM base as builder
 
-WORKDIR /app/replay/src
+WORKDIR /app/replay/
 RUN go mod vendor
 RUN GOOS=linux GOARCH=arm64 go build -mod=vendor -o conduit-replay -tags netgo -ldflags "-extldflags \"-static\""
 
