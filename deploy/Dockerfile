@@ -1,5 +1,5 @@
 # Base
-FROM golang:1.20.4-alpine
+FROM --platform=linux/arm64 golang:1.20.4-alpine
 
 WORKDIR /app/conduit-replay
 RUN apk add build-base make gcc g++ linux-headers git libpcap libpcap-dev
