@@ -7,10 +7,10 @@ RUN apk update && apk upgrade && apk add --no-cache ca-certificates
 RUN update-ca-certificates
 
 COPY go.mod ./src
-COPY cmd ./src
-COPY internal ./src
-COPY middleware ./src
 COPY *.go ./src
+COPY cmd ./src/cmd
+COPY internal ./src/internal
+COPY middleware ./src/middleware
 
 FROM base as builder
 
