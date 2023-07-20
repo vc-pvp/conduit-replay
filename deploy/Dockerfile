@@ -18,7 +18,7 @@ FROM base as builder
 WORKDIR /app/build/
 COPY --from=base /app/src/ .
 RUN go mod vendor
-RUN GOOS=linux GOARCH=arm64 go build -mod=vendor -o conduit-replay -tags netgo -ldflags "-extldflags \"-static\""
+RUN GOOS=linux GOARCH=arm64 go build -mod=vendor -o conduit-replay -tags netgo -ldflags "-extldflags \"-static\"" ./cmd/gor/gor.go
 
 FROM scratch
 WORKDIR /app/replay/bin
