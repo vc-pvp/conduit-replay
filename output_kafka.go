@@ -3,7 +3,6 @@ package goreplay
 import (
 	"encoding/json"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -26,8 +25,6 @@ const KafkaOutputFrequency = 500
 // NewKafkaOutput creates instance of kafka producer client  with TLS config
 func NewKafkaOutput(_ string, config *OutputKafkaConfig, tlsConfig *KafkaTLSConfig) PluginWriter {
 	c := NewKafkaConfig(&config.SASLConfig, tlsConfig)
-
-	sarama.Logger = log.New(os.Stdout, "Sarama: ", log.LstdFlags)
 	var producer sarama.AsyncProducer
 
 	if mock, ok := config.producer.(*mocks.AsyncProducer); ok && mock != nil {
