@@ -30,6 +30,8 @@ import (
 
 var stats *expvar.Map
 
+const AppDeploymentLabel = "app.kubernetes.io/instance"
+
 func init() {
 	stats = expvar.NewMap("raw")
 	stats.Init()
@@ -325,7 +327,7 @@ func k8sIPs(addr string) []string {
 	case "pod":
 		fieldSelector = "metadata.name=" + selectorValue
 	case "deployment":
-		labelSelector = "app=" + selectorValue
+		labelSelector = AppDeploymentLabel + "=" + selectorValue
 	case "daemonset":
 		labelSelector = "pod-template-generation=1,name=" + selectorValue
 	case "labelSelector":
