@@ -8,9 +8,10 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"github.com/buger/goreplay/proto"
 	"io/ioutil"
 	"log"
+
+	"github.com/buger/goreplay/proto"
 
 	"github.com/Shopify/sarama"
 	"github.com/xdg-go/scram"
@@ -96,6 +97,8 @@ func NewTLSConfig(clientCertFile, clientKeyFile, caCertFile string) (*tls.Config
 // NewKafkaConfig returns Kafka config with or without TLS
 func NewKafkaConfig(saslConfig *SASLKafkaConfig, tlsConfig *KafkaTLSConfig) *sarama.Config {
 	config := sarama.NewConfig()
+	config.Version = sarama.V3_3_1_0
+
 	// Configuration options go here
 	if tlsConfig != nil && (tlsConfig.ClientCert != "" || tlsConfig.CACert != "") {
 		config.Net.TLS.Enable = true

@@ -2,11 +2,13 @@ package goreplay
 
 import (
 	"encoding/json"
-	"github.com/buger/goreplay/internal/byteutils"
-	"github.com/buger/goreplay/proto"
 	"log"
+	"os"
 	"strings"
 	"time"
+
+	"github.com/buger/goreplay/internal/byteutils"
+	"github.com/buger/goreplay/proto"
 
 	"github.com/Shopify/sarama"
 	"github.com/Shopify/sarama/mocks"
@@ -25,6 +27,7 @@ const KafkaOutputFrequency = 500
 func NewKafkaOutput(_ string, config *OutputKafkaConfig, tlsConfig *KafkaTLSConfig) PluginWriter {
 	c := NewKafkaConfig(&config.SASLConfig, tlsConfig)
 
+	sarama.Logger = log.New(os.Stdout, "Sarama: ", log.LstdFlags)
 	var producer sarama.AsyncProducer
 
 	if mock, ok := config.producer.(*mocks.AsyncProducer); ok && mock != nil {
