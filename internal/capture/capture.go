@@ -15,7 +15,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/buger/goreplay"
 	"github.com/buger/goreplay/internal/size"
 	"github.com/buger/goreplay/internal/tcp"
 	"github.com/buger/goreplay/proto"
@@ -337,7 +336,7 @@ func k8sIPs(addr string) []string {
 		fieldSelector = selectorValue
 	}
 
-	goreplay.Debug(1, "labelSelector:", labelSelector)
+	fmt.Printf("labelSelector: %s", labelSelector)
 
 	pods, err := clientset.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector, FieldSelector: fieldSelector})
 	if err != nil {
@@ -346,9 +345,9 @@ func k8sIPs(addr string) []string {
 
 	var podIPs []string
 	for _, pod := range pods.Items {
-		goreplay.Debug(1, "pod:", pod)
+		fmt.Printf("pod: %v", pod)
 		for _, podIP := range pod.Status.PodIPs {
-			goreplay.Debug(1, "podIP:", podIP)
+			fmt.Printf("podIP: %v", podIP)
 			podIPs = append(podIPs, podIP.IP)
 		}
 	}
@@ -774,8 +773,7 @@ func (l *Listener) setInterfaces() (err error) {
 		}
 
 		if strings.HasPrefix(l.host, "k8s://") {
-			goreplay.Debug(1, "pi.Name:", pi.Name)
-
+			fmt.Printf("pi.Name: %s", pi.Name)
 			if !strings.HasPrefix(pi.Name, "ens") {
 				continue
 			}
