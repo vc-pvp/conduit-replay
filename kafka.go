@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 
 	"github.com/buger/goreplay/proto"
 
@@ -98,16 +97,18 @@ func NewTLSConfig(clientCertFile, clientKeyFile, caCertFile string) (*tls.Config
 func NewKafkaConfig(saslConfig *SASLKafkaConfig, tlsConfig *KafkaTLSConfig) *sarama.Config {
 	config := sarama.NewConfig()
 	config.Version = sarama.V3_3_1_0
+	config.Net.TLS.Enable = true
+	config.Net.TLS.Config = nil
 
 	// Configuration options go here
-	if tlsConfig != nil && (tlsConfig.ClientCert != "" || tlsConfig.CACert != "") {
-		config.Net.TLS.Enable = true
-		tlsConfig, err := NewTLSConfig(tlsConfig.ClientCert, tlsConfig.ClientKey, tlsConfig.CACert)
-		if err != nil {
-			log.Fatal(err)
-		}
-		config.Net.TLS.Config = tlsConfig
-	}
+	// if tlsConfig != nil && (tlsConfig.ClientCert != "" || tlsConfig.CACert != "") {
+	// 	config.Net.TLS.Enable = true
+	// 	tlsConfig, err := NewTLSConfig(tlsConfig.ClientCert, tlsConfig.ClientKey, tlsConfig.CACert)
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	config.Net.TLS.Config = tlsConfig
+	// }
 	if saslConfig.UseSASL {
 		mechanism := sarama.SASLMechanism(saslConfig.Mechanism)
 		config.Net.SASL.Enable = saslConfig.UseSASL
