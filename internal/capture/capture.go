@@ -389,7 +389,6 @@ func (l *Listener) Filter(ifi pcap.Interface, hosts ...string) (filter string) {
 	}
 
 	if l.config.TrackResponse {
-		fmt.Println(fmt.Sprintf("ifi name: %s", ifi.Name))
 		responseFilter := portsFilter(l.config.Transport, "src", l.ports)
 
 		if len(hosts) != 0 && !l.config.Promiscuous {

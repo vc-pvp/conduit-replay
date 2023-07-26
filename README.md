@@ -1,4 +1,31 @@
-<a href="https://semgrep.dev/login?utm_source=github&utm_medium=badge&utm_campaign=growth-oss"><img src="https://img.shields.io/badge/semgrep-security-green.svg" /></a> [![GitHub release](https://img.shields.io/github/release/buger/gor.svg?maxAge=3600)](https://github.com/buger/goreplay/releases) [![codebeat](https://codebeat.co/badges/6427d589-a78e-416c-a546-d299b4089893)](https://codebeat.co/projects/github-com-buger-gor) [![Go Report Card](https://goreportcard.com/badge/github.com/buger/gor)](https://goreportcard.com/report/github.com/buger/gor) [![Join the chat at https://gitter.im/buger/gor](https://badges.gitter.im/buger/gor.svg)](https://gitter.im/buger/gor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+# Conduit Replay
+
+Conduit Replay is a custom fork of the GoReplay repo (bottom of readme).
+
+There have been a few changes to allow this to run on our stack. Some minor code changes, and deployment steps
+
+## Deployment
+Deployment of this repo in Conduit uses the files in the `/deploy` folder, not the root. 
+
+There is currently:
+- Dockerfile (builds the application based on the code in the repo)
+- docker-bake.hcl (bake file instructions for building)
+- daemonset.spec (the code needed to deploy the application)
+
+To deploy the application, go to Kubernetes dashboard, and paste the contents of the daemonset in the input when you click the + (create) button at the top right. Before pasting, please replace the following with actual values:
+- <K8_DEPLOYMENT>
+- <KAFKA_HOST>
+- <KAFKA_TOPIC>
+- <KAFKA_MECHANISM>
+- <KAFKA_USER>
+- <KAFKA_PASSWORD>
+
+If you wish to only monitor a specific URL, please add the following env var:
+
+```azure
+- '--http-allow-url'
+- \/<URL_PATH>$
+```
 
 ![Go Replay](http://i.imgur.com/ZG2ki5n.png)
 
