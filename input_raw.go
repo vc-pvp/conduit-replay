@@ -47,6 +47,7 @@ func NewRAWInput(address string, config RAWInputConfig) (i *RAWInput) {
 			err = nil
 		} else if strings.HasPrefix(address, "k8s://") {
 			host = address
+			_ports = ""
 			// portIndex := strings.LastIndex(address, ":")
 			// host = address[:portIndex]
 			// _ports = address[portIndex+1:]
