@@ -18,14 +18,14 @@ import (
 	"github.com/buger/goreplay/internal/size"
 	"github.com/buger/goreplay/internal/tcp"
 	"github.com/buger/goreplay/proto"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 var stats *expvar.Map
@@ -295,12 +295,15 @@ func (l *Listener) ListenBackground(ctx context.Context) chan error {
 //	[namespace/]labelSelector/[selector]
 //	[namespace/]fieldSelector/[selector]
 func k8sIPs(addr string) []string {
+	// config, err := clientcmd.BuildConfigFromFlags("", "/Users/sgillam-wright2021/.microk8s/config")
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	// creates the clientset
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
@@ -336,7 +339,10 @@ func k8sIPs(addr string) []string {
 		fieldSelector = selectorValue
 	}
 
-	fmt.Printf("labelSelector: %s", labelSelector)
+	fmt.Println(fmt.Sprintf("SelectorType: %s", selectorType))
+	fmt.Println(fmt.Sprintf("SelectorValue: %s", selectorValue))
+	fmt.Println(fmt.Sprintf("Sections: %s", sections))
+	fmt.Println(fmt.Sprintf("labelSelector: %s", labelSelector))
 
 	pods, err := clientset.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector, FieldSelector: fieldSelector})
 	if err != nil {
@@ -345,9 +351,10 @@ func k8sIPs(addr string) []string {
 
 	var podIPs []string
 	for _, pod := range pods.Items {
-		fmt.Printf("pod: %v", pod)
+		fmt.Println(fmt.Sprintf("Pod Ports: %v", pod.Spec.Containers[0].Ports))
+
 		for _, podIP := range pod.Status.PodIPs {
-			fmt.Printf("podIP: %v", podIP)
+			fmt.Println(fmt.Sprintf("podIP: %v", podIP))
 			podIPs = append(podIPs, podIP.IP)
 		}
 	}
@@ -773,7 +780,7 @@ func (l *Listener) setInterfaces() (err error) {
 		}
 
 		if strings.HasPrefix(l.host, "k8s://") {
-			fmt.Printf("pi.Name: %s", pi.Name)
+			fmt.Println(fmt.Sprintf("pi: %v", pi.Name))
 			if !strings.HasPrefix(pi.Name, "ens") {
 				continue
 			}
