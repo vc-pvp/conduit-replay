@@ -38,26 +38,27 @@ func NewRAWInput(address string, config RAWInputConfig) (i *RAWInput) {
 	i.config = config
 	i.quit = make(chan bool)
 
-	host, _ports, err := net.SplitHostPort(address)
-	if err != nil {
-		// If we are reading pcap file, no port needed
-		if strings.HasSuffix(address, "pcap") {
-			host = address
-			_ports = "0"
-			err = nil
-		} else if strings.HasPrefix(address, "k8s://") {
-			host = address
-			_ports = ""
-			// portIndex := strings.LastIndex(address, ":")
-			// host = address[:portIndex]
-			// _ports = address[portIndex+1:]
-		} else {
+	var host string
+	var _ports string
+	var err error
+
+	if strings.HasSuffix(address, "pcap") {
+		host = address
+		_ports = "0"
+
+		// Set engine
+		i.config.Engine = capture.EnginePcapFile
+	} else if strings.HasPrefix(address, "k8s://") {
+		// portIndex := strings.LastIndex(address, ":")
+		// host = address[:portIndex]
+		// _ports = address[portIndex+1:]
+		host = address
+		_ports = ""
+	} else {
+		host, _ports, err = net.SplitHostPort(address)
+		if err != nil {
 			log.Fatalf("input-raw: error while parsing address: %s", err)
 		}
-	}
-
-	if strings.HasSuffix(host, "pcap") {
-		i.config.Engine = capture.EnginePcapFile
 	}
 
 	var ports []uint16
