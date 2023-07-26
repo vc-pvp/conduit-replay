@@ -3,14 +3,15 @@ package goreplay
 import (
 	"context"
 	"fmt"
-	"github.com/buger/goreplay/internal/capture"
-	"github.com/buger/goreplay/internal/tcp"
-	"github.com/buger/goreplay/proto"
 	"log"
 	"net"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/buger/goreplay/internal/capture"
+	"github.com/buger/goreplay/internal/tcp"
+	"github.com/buger/goreplay/proto"
 )
 
 // RAWInputConfig represents configuration that can be applied on raw input
@@ -45,9 +46,10 @@ func NewRAWInput(address string, config RAWInputConfig) (i *RAWInput) {
 			_ports = "0"
 			err = nil
 		} else if strings.HasPrefix(address, "k8s://") {
-			portIndex := strings.LastIndex(address, ":")
-			host = address[:portIndex]
-			_ports = address[portIndex+1:]
+			host = address
+			// portIndex := strings.LastIndex(address, ":")
+			// host = address[:portIndex]
+			// _ports = address[portIndex+1:]
 		} else {
 			log.Fatalf("input-raw: error while parsing address: %s", err)
 		}
