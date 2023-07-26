@@ -45,13 +45,6 @@ spec:
             - 'User-Agent: kube-probe/1.25'
             - '--http-disallow-header'
             - 'User-Agent: Prometheus/2.39.1'
-          resources:
-            limits:
-              cpu: 1
-              memory: 2
-            requests:
-              cpu: 1
-              memory: 2
           imagePullPolicy: IfNotPresent
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
