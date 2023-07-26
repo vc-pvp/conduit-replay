@@ -340,11 +340,6 @@ func k8sIPs(addr string) ([]string, []uint16) {
 		fieldSelector = selectorValue
 	}
 
-	fmt.Println(fmt.Sprintf("SelectorType: %s", selectorType))
-	fmt.Println(fmt.Sprintf("SelectorValue: %s", selectorValue))
-	fmt.Println(fmt.Sprintf("Sections: %s", sections))
-	fmt.Println(fmt.Sprintf("labelSelector: %s", labelSelector))
-
 	pods, err := clientset.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector, FieldSelector: fieldSelector})
 	if err != nil {
 		panic(err.Error())
@@ -353,10 +348,7 @@ func k8sIPs(addr string) ([]string, []uint16) {
 	var podIPs []string
 	var podPorts []uint16
 	for _, pod := range pods.Items {
-		fmt.Println(fmt.Sprintf("Pod Ports: %v", pod.Spec.Containers[0].Ports))
-
 		for _, podIP := range pod.Status.PodIPs {
-			fmt.Println(fmt.Sprintf("podIP: %v", podIP))
 			podIPs = append(podIPs, podIP.IP)
 		}
 
@@ -397,6 +389,7 @@ func (l *Listener) Filter(ifi pcap.Interface, hosts ...string) (filter string) {
 	}
 
 	if l.config.TrackResponse {
+		fmt.Println(fmt.Sprintf("ifi name: %s", ifi.Name))
 		responseFilter := portsFilter(l.config.Transport, "src", l.ports)
 
 		if len(hosts) != 0 && !l.config.Promiscuous {
