@@ -158,6 +158,7 @@ func NewListener(host string, ports []uint16, config PcapOptions) (l *Listener, 
 	if l.host == "localhost" {
 		l.host = "127.0.0.1"
 	}
+
 	l.ports = ports
 
 	l.config = config
@@ -170,7 +171,9 @@ func NewListener(host string, ports []uint16, config PcapOptions) (l *Listener, 
 	l.messages = make(chan *tcp.Message, 10000)
 
 	if strings.HasPrefix(l.host, "k8s://") {
-		l.config.BPFFilter = l.Filter(pcap.Interface{}, k8sIPs(l.host[6:])...)
+		ips, ports := k8sIPs(l.host[6:])
+		l.ports = ports
+		l.config.BPFFilter = l.Filter(pcap.Interface{}, ips...)
 	}
 
 	switch config.Engine {
@@ -215,7 +218,9 @@ func (l *Listener) Listen(ctx context.Context) (err error) {
 
 			// Check for Pod IP changes
 			if strings.HasPrefix(l.host, "k8s://") {
-				newFilter := l.Filter(pcap.Interface{}, k8sIPs(l.host[6:])...)
+				ips, ports := k8sIPs(l.host[6:])
+				l.ports = ports
+				newFilter := l.Filter(pcap.Interface{}, ips...)
 				if newFilter != l.config.BPFFilter {
 					fmt.Println("k8s pods configuration changed, new filter: ", newFilter)
 					for _, h := range l.Handles {
@@ -294,11 +299,7 @@ func (l *Listener) ListenBackground(ctx context.Context) chan error {
 //	[namespace/]daemonset/[daemonset_name]
 //	[namespace/]labelSelector/[selector]
 //	[namespace/]fieldSelector/[selector]
-func k8sIPs(addr string) []string {
-	// config, err := clientcmd.BuildConfigFromFlags("", "/Users/sgillam-wright2021/.microk8s/config")
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
+func k8sIPs(addr string) ([]string, []uint16) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
@@ -350,6 +351,7 @@ func k8sIPs(addr string) []string {
 	}
 
 	var podIPs []string
+	var podPorts []uint16
 	for _, pod := range pods.Items {
 		fmt.Println(fmt.Sprintf("Pod Ports: %v", pod.Spec.Containers[0].Ports))
 
@@ -357,8 +359,15 @@ func k8sIPs(addr string) []string {
 			fmt.Println(fmt.Sprintf("podIP: %v", podIP))
 			podIPs = append(podIPs, podIP.IP)
 		}
+
+		for _, c := range pod.Spec.Containers {
+			for _, port := range c.Ports {
+				podPorts = append(podPorts, uint16(port.ContainerPort))
+			}
+		}
+
 	}
-	return podIPs
+	return podIPs, podPorts
 }
 
 // Filter returns automatic filter applied by goreplay
@@ -779,12 +788,13 @@ func (l *Listener) setInterfaces() (err error) {
 			continue
 		}
 
-		if strings.HasPrefix(l.host, "k8s://") {
-			fmt.Println(fmt.Sprintf("pi: %v", pi.Name))
-			if !strings.HasPrefix(pi.Name, "ens") {
-				continue
-			}
-		}
+		// TODO: Remove this if it works
+		// if strings.HasPrefix(l.host, "k8s://") {
+		// 	fmt.Println(fmt.Sprintf("pi: %v", pi.Name))
+		// 	if !strings.HasPrefix(pi.Name, "ens") {
+		// 		continue
+		// 	}
+		// }
 
 		if isDevice(l.host, pi) {
 			l.Interfaces = []pcap.Interface{pi}
