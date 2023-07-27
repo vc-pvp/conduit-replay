@@ -14,10 +14,11 @@ spec:
     spec:
       containers:
         - name: conduit-replay
-          image: vdock.repo.viacom.com/cge/viacbs/github.com/vc-pvp/conduit-replay/conduit-replay/conduit-replay:57
+          image: >-
+            vdock.repo.viacom.com/cge/viacbs/github.com/vc-pvp/conduit-replay/conduit-replay/conduit-replay:57
           args:
             - '--input-raw'
-            - <K8_DEPLOYMENT>#<k8s://pvp/deployment/conduit-server-dev-conduit
+            - k8s://pvp/deployment/conduit-server-prod-conduit
             - '--input-raw-track-response'
             - '--input-raw-ignore-interface'
             - ens5
@@ -35,7 +36,7 @@ spec:
             - '--output-kafka-mechanism'
             - <KAFKA_MECHANISM>
             - '--output-kafka-username'
-            - <KAFKA_USER>>
+            - <KAFKA_USERNAME>
             - '--output-kafka-password'
             - <KAFKA_PASSWORD>
             - '--output-kafka-json-format'
@@ -45,12 +46,19 @@ spec:
             - 'User-Agent: kube-probe/1.25'
             - '--http-disallow-header'
             - 'User-Agent: Prometheus/2.39.1'
+          resources:
+            limits:
+              cpu: '2'
+              memory: 2Gi
+            requests:
+              cpu: '1'
+              memory: 1Gi
           imagePullPolicy: IfNotPresent
       restartPolicy: Always
-      terminationGracePeriodSeconds: 30
       nodeSelector:
         k8s.viacbs.tech/nodepool: pvp-arm64
-      serviceAccount: conduit-orchestrator-dev-conduit-orc-vmn-read-only
+      serviceAccountName: conduit-orchestrator-prod-conduit-orc-vmn-read-only
+      serviceAccount: conduit-orchestrator-prod-conduit-orc-vmn-read-only
       hostNetwork: true
       imagePullSecrets:
         - name: cge-pull

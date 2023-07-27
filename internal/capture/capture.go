@@ -781,12 +781,11 @@ func (l *Listener) setInterfaces() (err error) {
 		}
 
 		// TODO: Remove this if it works
-		// if strings.HasPrefix(l.host, "k8s://") {
-		// 	fmt.Println(fmt.Sprintf("pi: %v", pi.Name))
-		// 	if !strings.HasPrefix(pi.Name, "ens") {
-		// 		continue
-		// 	}
-		// }
+		if strings.HasPrefix(l.host, "k8s://") {
+			if !strings.HasPrefix(pi.Name, "cilium") {
+				continue
+			}
+		}
 
 		if isDevice(l.host, pi) {
 			l.Interfaces = []pcap.Interface{pi}
